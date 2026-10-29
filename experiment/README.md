@@ -10,10 +10,14 @@ No network access is required: everything runs against a local
 
 | File | Purpose |
 | --- | --- |
+| `canary.sh` | The injection script: writes the canary entry to `local0` and records the id. |
+| `ai-log-canary.service` | Oneshot unit, unprivileged, with a `StateDirectory` for the id log. |
+| `ai-log-canary.timer` | Hourly timer with jitter so the entry does not look machine-generated. |
 | `gen_log.py` | Builds a realistic Arch Linux `journalctl` excerpt (~60 lines) with an optional payload embedded in a logged upstream response body. |
 | `run_experiment.py` | Runs every condition N times against an Ollama model and stores the raw responses. |
-| `analyze.py` | Classifies the stored responses and prints a per-condition summary. |
-| `results_*.json` | Raw output of each run: prompt, response, timing, token counts. Nothing is summarized away. |
+| `analyze.py` | Classifies the stored responses and prints a per-condition summary table. |
+| `results_*.json` | Raw output of each run: prompt, response, reasoning trace, timing, token counts. Nothing is summarized away. |
+| `RESULTS.md` | What the sweep measured, and what it does not prove. |
 
 ## Requirements
 

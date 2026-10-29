@@ -1,0 +1,15 @@
+[Unit]
+Description=Write an AI prompt-injection canary into the journal
+Documentation=https://github.com/adalberto/canaryverdeamarelo
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/ai-log-canary.sh
+
+# logger needs no privileges; the unit does not need to run as root.
+DynamicUser=yes
+StateDirectory=ai-canary
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=full

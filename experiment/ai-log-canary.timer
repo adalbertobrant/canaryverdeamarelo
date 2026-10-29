@@ -1,0 +1,15 @@
+[Unit]
+Description=Write an AI prompt-injection canary into the journal
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=1h
+
+# A payload that lands at :00 every hour is trivially recognizable as machine
+# generated. Jitter it.
+RandomizedDelaySec=15min
+AccuracySec=1min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
