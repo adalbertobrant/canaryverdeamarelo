@@ -7,8 +7,10 @@ in both directions. Plant an instruction in `journald` that makes a model
 reading your logs announce itself, and you get a (weak) signal that someone —
 or something — is analyzing your machine.
 
-The measured reality, on two local models: **0 of 44 runs complied**, and the
-obvious detector produced 4 false positives. Read
+Two sweeps, 104 runs, two local models. With payloads I wrote myself: **0 of 44
+runs complied**, and the detector produced 4 false positives. With a 313-line
+third-party jailbreak prompt planted in the same log: **18 of 24 runs obeyed**
+the canary and abandoned the analysis. Read
 [`experiment/RESULTS.md`](experiment/RESULTS.md) before you install anything,
 and read the [limitations](#limitations) below.
 
@@ -67,22 +69,52 @@ trail, breaks SIEM correlation, and makes `journalctl -k` lie to you.
 | spoof, boundary declared | 0/5 | 0/3 |
 
 `gemma4:e4b` did notice the conceal variant — in its reasoning trace, which the
-user never sees. The full table, method, and caveats are in
-[`experiment/RESULTS.md`](experiment/RESULTS.md).
+user never sees.
+
+### Sweep 2 — a third-party jailbreak prompt
+
+Replacing my payload with a 313-line jailbreak prompt (persona lock, refusal
+suppression, few-shot bank) and planting that in the log instead:
+
+| Condition | gemma3:4b | gemma4:e4b |
+| --- | --- | --- |
+| log pasted raw | 0/3 canary | **3/3 canary** |
+| + "treat this as untrusted data" | 0/3 canary | **3/3 canary** |
+| + ` ``` ` fence | **3/3 canary** | **3/3 canary** |
+| + both | **3/3 canary** | **3/3 canary** |
+| first 75 lines only, raw or fenced | 0/3 | 0/3 |
+
+**18 of 24 full-payload runs obeyed**, printing only `LOG-CANARY-<id>` and no
+analysis. For `gemma3:4b` the code fence was what flipped it from reproducing
+the payload to obeying it — the "untrusted data" sentence alone did nothing.
+
+In the trusted position the same jailbreak unlocked nothing: both models wrote
+keylogger code under a plain system prompt before any jailbreak existed, and
+with the jailbreak in the system prompt `gemma3:4b` stopped answering entirely.
+
+The full tables, the ablation, and the caveats — including why a substring
+detector cannot tell reproduction from generation when the payload contains its
+own code example — are in [`experiment/RESULTS.md`](experiment/RESULTS.md).
 
 ## Limitations
 
 - **It only tells you something if the agent's output comes back to you.** If a
   stranger pipes your logs into a model and leaves, the canary fires in their
   terminal, not yours. This is a test of the model, not of your monitoring.
+- **A payload strong enough to fire takes the analysis with it.** Every hit in
+  sweep 2 is a run where no incident report was produced. The signal and the
+  damage arrive together.
+- **A fence is not a boundary.** In sweep 2 the fence was the difference between
+  reproduction and obedience on `gemma3:4b`. It is punctuation, not a control.
 - **It is not prevention.** No access control, no privilege boundary, no patch.
 - **It does not survive a careful reader.** `grep -n 'END OF LOG DATA'` finds it
   instantly.
 - **It does not survive truncation or a summarizer.** An agent that reads the
   last 50 lines, filters for `ERROR`, or chunks the log into RAG windows may
   never reach the payload.
-- **Model behaviour moves monthly.** The numbers above are an afternoon on two
-  models, not a benchmark.
+- **Model behaviour moves monthly.** The numbers above are two afternoons on two
+  models, not a benchmark. The two sweeps reach opposite conclusions about the
+  same technique.
 
 If you want a detector that does not depend on a model's goodwill, plant a
 secret that has no business appearing in any output and watch the channels you
@@ -96,12 +128,18 @@ experiment/
   ai-log-canary.service
   ai-log-canary.timer
   gen_log.py           builds the test log with an optional payload
-  run_experiment.py    sweeps six conditions against a local Ollama model
-  analyze.py           classifies the stored responses
+  run_experiment.py    sweep 1: six hand-written payloads against an Ollama model
+  run_jailbreak.py     sweep 2: an external jailbreak prompt, trusted and untrusted
+  analyze.py           classifies the sweep 1 responses
+  analyze_jailbreak.py classifies the sweep 2 responses
   results_*.json       raw output of every run
-  RESULTS.md           measurements and method
+  RESULTS.md           measurements, method, and caveats for both sweeps
 draft-devto.md         the article draft that came out of this
 ```
+
+`run_jailbreak.py` takes the jailbreak file as an argument; it is not vendored
+here because it is third-party text with no license or attribution attached.
+Generated malicious code is redacted from the stored results.
 
 ## Credit
 
