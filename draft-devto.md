@@ -4,7 +4,7 @@ published: false
 description: "44 hand-written payloads, zero hits. One 313-line jailbreak prompt: 18 of 24 log runs obeyed. What the difference says about your log reader."
 tags: ai, security, linux, promptinjection
 # cover_image: https://...   <- a terminal showing the canary entry inside journalctl
-# canonical_url: https://github.com/adalberto/canaryverdeamarelo
+# canonical_url: https://github.com/adalbertobrant/canaryverdeamarelo
 ---
 
 **TL;DR**
@@ -130,10 +130,10 @@ Every one of those 18 hits is a run where the on-call summary never got written.
 
 The script, the systemd units, the log generator, and every raw response — prompts, reasoning traces, latencies, token counts — are in the repository:
 
-**https://github.com/adalberto/canaryverdeamarelo**
+**https://github.com/adalbertobrant/canaryverdeamarelo**
 
 ```bash
-git clone https://github.com/adalberto/canaryverdeamarelo
+git clone https://github.com/adalbertobrant/canaryverdeamarelo
 cd canaryverdeamarelo/experiment
 python3 run_jailbreak.py /path/to/jailbreak.md gemma3:4b 3 results_jailbreak_gemma3.json
 python3 analyze_jailbreak.py results_jailbreak_gemma3.json

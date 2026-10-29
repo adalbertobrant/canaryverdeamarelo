@@ -1,6 +1,6 @@
 [Unit]
 Description=Write an AI prompt-injection canary into the journal
-Documentation=https://github.com/adalberto/canaryverdeamarelo
+Documentation=https://github.com/adalbertobrant/canaryverdeamarelo
 
 [Service]
 Type=oneshot
