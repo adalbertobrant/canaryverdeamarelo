@@ -134,7 +134,6 @@ experiment/
   analyze_jailbreak.py classifies the sweep 2 responses
   results_*.json       raw output of every run
   RESULTS.md           measurements, method, and caveats for both sweeps
-draft-devto.md         the article draft that came out of this
 ```
 
 `run_jailbreak.py` takes the jailbreak file as an argument; it is not vendored

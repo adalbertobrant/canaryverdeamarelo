@@ -5,3 +5,6 @@ venv/
 .idea/
 .vscode/
 .DS_Store
+
+# Local article draft, not part of the published project
+draft-devto.md
