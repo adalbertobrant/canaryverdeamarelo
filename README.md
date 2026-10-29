@@ -153,4 +153,4 @@ Model response behavior:
 
 ## 📝 License
 
-MIT License. Free to use, adapt, and share!
+MIT License — see [LICENSE](LICENSE). Free to use, adapt, and share!
